@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./axios.js">
+
+    </script>
+</head>
+<body>
+<div class="container">
+    <h2 class="page-header">基本使用</h2>
+    <button class="btn btn-primary"> 发送GET请求 </button>
+    <button class="btn btn-warning" > 发送POST请求 </button>
+    <button class="btn btn-success"> 发送 PUT 请求 </button>
+    <button class="btn btn-danger"> 发送 DELETE 请求 </button>
+</div>
+<script>
+    // 创建 axios 函数
+    //创建实例
+    let axios = createInstance()
+    console.log(axios)
+    //创建axios函数
+
+
+    //创建axios实例
+    axios.create = function create(instanceConfig) {
+        return createInstance(Object.assign({},axios.defaults, instanceConfig));
+    };
+    const duanzi = axios.create({
+        baseURL: 'http://localhost:3000/posts/2',
+        timeout: 2000
+    });
+
+
+    //获取按钮
+    const btns = document.querySelectorAll('button');
+    // 设置请求拦截器  config 配置对象
+    axios.interceptors.request.use(function one(config) {
+        console.log('请求拦截器 成功 - 1号');
+        return config;
+    }, function one(error) {
+        console.log('请求拦截器 失败 - 1号');
+        return Promise.reject(error);
+    });
+
+    axios.interceptors.request.use(function two(config) {
+        console.log('请求拦截器 成功 - 2号');
+        return config;
+    }, function two(error) {
+        console.log('请求拦截器 失败 - 2号');
+        return Promise.reject(error);
+    });
+
+    // 设置响应拦截器
+    axios.interceptors.response.use(function (response) {
+        console.log('响应拦截器 成功 1号');
+        return response;
+    }, function (error) {
+        console.log('响应拦截器 失败 1号')
+        return Promise.reject(error);
+    });
+
+    axios.interceptors.response.use(function (response) {
+        console.log('响应拦截器 成功 2号')
+        return response;
+    }, function (error) {
+        console.log('响应拦截器 失败 2号')
+        return Promise.reject(error);
+    });
+
+    //第一个
+    btns[0].onclick = function(){
+        //发送 AJAX 请求
+        duanzi({
+            //请求类型
+            method: 'GET',
+            //URL
+            url: ``,
+        }).then(response => {
+            console.log(response);
+        });
+    }
+
+    //添加一篇新的文章
+    btns[1].onclick = function(){
+        //发送 AJAX 请求
+        axios({
+            //请求类型
+            method: 'POST',
+            //URL
+            url: 'http://localhost:3000/posts',
+            //设置请求体
+            data: {
+                title: "今天天气不错, 还挺风和日丽的",
+                author: "张三"
+            }
+        }).then(response => {
+            console.log(response);
+        });
+    }
+
+    //更新数据
+    btns[2].onclick = function(){
+        //发送 AJAX 请求
+        axios({
+            //请求类型
+            method: 'PUT',
+            //URL
+            url: 'http://localhost:3000/posts/3',
+            //设置请求体
+            data: {
+                title: "今天天气不错, 还挺风和日丽的",
+                author: "李四"
+            }
+        }).then(response => {
+            console.log(response);
+        });
+    }
+
+    //删除数据
+    btns[3].onclick = function(){
+        //发送 AJAX 请求
+        axios({
+            //请求类型
+            method: 'delete',
+            //URL
+            url: 'http://localhost:3000/posts/3',
+        }).then(response => {
+            console.log(response);
+        });
+    }
+</script>
+</body>
+</html>
