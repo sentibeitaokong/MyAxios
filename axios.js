@@ -51,14 +51,17 @@ function dispatchRequest(config){
 }
 function xhrAapter(config){
     console.log('适配器函数')
+    let requestData = config.data;
     //适配器函数返回一个Prosmise对象，便于处理接口返回值
     return new Promise((resolve, reject)=>{
         //ajax底层原理    创建xhrHttpRequest对象
         let xhr=new XMLHttpRequest();
+        // 设置请求头
+        // xhr.setRequestHeader('Content-Type', 'application/json')
         //开启一个请求
         xhr.open(config.method, config.url,true);
-        //发送请求
-        xhr.send()
+        //发送请求并附带请求参数
+        xhr.send(JSON.stringify(requestData))
         //监听请求方法
         xhr.onreadystatechange=function () {
             //成功请求状态判断
@@ -85,6 +88,29 @@ function xhrAapter(config){
                 }
             }
         }
+        // 取消请求的处理
+        if(config.cancelToken){
+            //config.cancelToken.promise是一个promise对象
+            config.cancelToken.promise.then(cancel=>{
+                xhr.abort()
+                //将整体结果设置为失败
+                reject(new Error('请求已经被取消'))
+            })
+        }
+    })
+}
+//CancelToken构造函数
+function  CancelToken(executor){
+    // 声明promise对象变量
+    var resolvePromise
+    //为CancelToken构造函数添加实例,实例里面是promise对象
+    this.promise=new Promise((resolve=>{
+        //存储resolve状态
+        resolvePromise=resolve
+    }))
+    executor(function () {
+        //直接执行promise并让其成功
+        resolvePromise()
     })
 }
 //get方法

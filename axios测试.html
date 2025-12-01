@@ -14,13 +14,13 @@
     <button class="btn btn-warning" > 发送POST请求 </button>
     <button class="btn btn-success"> 发送 PUT 请求 </button>
     <button class="btn btn-danger"> 发送 DELETE 请求 </button>
+    <button class="btn btn-primary"> 发送请求 </button>
+    <button class="btn btn-warning"> 取消请求 </button>
 </div>
 <script>
     // 创建 axios 函数
     //创建实例
     let axios = createInstance()
-    console.log(axios)
-    //创建axios函数
 
 
     //创建axios实例
@@ -36,7 +36,7 @@
     //获取按钮
     const btns = document.querySelectorAll('button');
     // 设置请求拦截器  config 配置对象
-    axios.interceptors.request.use(function one(config) {
+  /*  axios.interceptors.request.use(function one(config) {
         console.log('请求拦截器 成功 - 1号');
         return config;
     }, function one(error) {
@@ -67,7 +67,7 @@
     }, function (error) {
         console.log('响应拦截器 失败 2号')
         return Promise.reject(error);
-    });
+    });*/
 
     //第一个
     btns[0].onclick = function(){
@@ -129,6 +129,40 @@
         }).then(response => {
             console.log(response);
         });
+    }
+    //删除数据
+    let cancel=null
+    btns[4].onclick = function(){
+        console.log('11111')
+        //cancel不为空说明正在请求接口，直接阻止请求
+        if(cancel!==null){
+            cancel()
+        }
+        //创建cancelToken值
+        let cancelToken=new CancelToken(function(c){
+            cancel=c
+        })
+        //发送 AJAX 请求
+        axios({
+            //请求类型
+            method: 'POST',
+            //URL
+            url: 'http://localhost:3000/posts',
+            //设置请求体
+            data: {
+                title: "今天天气不错, 还挺风和日丽的",
+                author: "张三"
+            },
+            //可以阻止请求的参数
+            cancelToken:cancelToken
+        }).then(response => {
+            console.log(response);
+            //请求结束，阻止请求参数赋值为null
+            cancel=null
+        });
+    }
+    btns[5].onclick = function(){
+        cancel()
     }
 </script>
 </body>
