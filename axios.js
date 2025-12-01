@@ -25,14 +25,14 @@ Axios.prototype.request=function (config){
     let chains=[dispatchRequest,undefined]
     // 将请求拦截器的数组放在chains数组前面待处理
     this.interceptors.request.handlers.forEach(item=>{
-        chains.unshift(item.fulfilled,item.request)
+        chains.unshift(item.fulfilled,item.rejected)
     })
     //将响应拦截器的数组放在chains数组后面待处理
     this.interceptors.response.handlers.forEach(item=>{
-        chains.push(item.fulfilled,item.request)
+        chains.push(item.fulfilled,item.rejected)
     })
     //while循环chains数组，处理所有请求拦截器，请求和响应拦截器
-    while (chains.length){
+    while (chains.length>0){
         promise=promise.then(chains.shift(),chains.shift())
     }
     //promise.then可以递归处理数据
@@ -104,10 +104,10 @@ function  CancelToken(executor){
     // 声明promise对象变量
     var resolvePromise
     //为CancelToken构造函数添加实例,实例里面是promise对象
-    this.promise=new Promise((resolve=>{
+    this.promise=new Promise(resolve=>{
         //存储resolve状态
         resolvePromise=resolve
-    }))
+    })
     executor(function () {
         //直接执行promise并让其成功
         resolvePromise()
@@ -136,7 +136,7 @@ function createInstance(config){
     //将Axios原型链上的request方法指向Axios实例，为了后续的方法调用
     let instance=Axios.prototype.request.bind(context)
     //将Axios原型链上的所有方法指向Axios实例，然后浅拷贝给instatnce，因此instance具备Axios原型链上的所有方法
-    Object.keys(Axios.prototype).forEach((item)=>{
+    Object.keys(Axios.prototype).forEach(item=>{
         instance[item]=Axios.prototype[item].bind(context)
     })
     // 将Axios实例上所有配置信息拷贝给instance，instance现在是具备Axios实例上所有配置信息以及原型链上的所有方法
